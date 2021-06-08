@@ -20,11 +20,23 @@ app.get("/", function (req, res) {
 
 
 // your first API endpoint... 
-app.get("/api/hello", function (req, res) {
-  res.json({greeting: 'hello API'});
+app.get("/api/:date", function (req, res) {
+  let date = req.params.date;
+  const timestamp = {};
+
+  date = /-|\s/g.test(date) ? new Date(date) : new Date(parseInt(date));
+
+  timestamp.unix = date.getTime();
+  timestamp.utc = date.toUTCString();
+
+  res.json(!timestamp.unix || !timestamp.utc ? { error: 'Invalid Date' } : timestamp);
 });
 
+app.get("/api", function (req, res) {
+  const timestamp = new Date();
 
+  res.json({ unix: timestamp.getTime(), utc: timestamp.toUTCString() });
+});
 
 // listen for requests :)
 var listener = app.listen(process.env.PORT, function () {
